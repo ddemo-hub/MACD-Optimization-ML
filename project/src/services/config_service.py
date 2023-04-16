@@ -8,8 +8,8 @@ class ConfigService(metaclass=Singleton):
             self.config = yaml.safe_load(config_yaml)
     
     @property
-    def app(self):
-        return self.config["app"]
+    def application(self):
+        return self.config["application"]
     
     @property
     def binance_data_url(self):

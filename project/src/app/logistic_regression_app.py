@@ -1,4 +1,3 @@
-from .app_container import AppContainer
 
-class LogisticRegressionApp():
+class LogisticRegressionApp:
     pass

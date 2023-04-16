@@ -1,4 +1,4 @@
-app:
+application:
   is_NN: False
   is_random_forest: False
   is_logistic_regression: True
@@ -15,7 +15,6 @@ labeling_parameters:
   macd_fast: 12
   macd_slow: 26
   macd_signal: 9
-
 
 
 

@@ -86,5 +86,6 @@ class DataService(metaclass=Singleton):
         
         # Return the candles that are in the requested range
         ohlcv = ohlcv.loc[(ohlcv.timestamp >= start_ts) & (ohlcv.timestamp <= end_ts)]
+        ohlcv.reset_index(inplace=True)
         
         return ohlcv
