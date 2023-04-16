@@ -5,9 +5,9 @@
 TBA
 ## Installation
 ### Dependencies
-This project is implemented in Python 3.10.6
-Python packages used can be found in requirements.txt
-Using exact versions of the dependencies is recommended to avoid bugs & errors
+This project is implemented in Python 3.10.6 \
+Python packages used can be found in requirements.txt \
+Using exact versions of the dependencies is recommended to avoid bugs & errors \
 ### Setup
 * __On Linux:__
   - Run "source setup.sh"
