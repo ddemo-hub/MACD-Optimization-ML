@@ -6,7 +6,12 @@ class ConfigService(metaclass=Singleton):
     def __init__(self, config_file):
         with open(config_file, "r") as config_yaml:
             self.config = yaml.safe_load(config_yaml)
-        
+    
+    @property
+    def app(self):
+        return self.config["app"]
+    
     @property
     def binance_data_url(self):
-        return self.config.binance_data_url
+        return self.config["binance_data_url"]
+    

@@ -12,6 +12,16 @@ class DataService(metaclass=Singleton):
         self.config_service = config_service
         
     def download_historical_candles(self, symbol: str, interval: str):
+        """Download the kline data for the given interval of the given symbol and merge the data into a single csv file
+
+        Args:
+            interval (str): Interval ENUM
+            symbol (str): Symbol ENUM
+
+        Raises:
+            Exception: If there is a server-side error at Binance endpoint
+            Exception: If no data is found to be downloaded, the parameters given may be the cause
+        """
         path = f"{Globals.klines_path}/{symbol}/{interval}"
         os.makedirs(path=path)
         
@@ -53,13 +63,28 @@ class DataService(metaclass=Singleton):
         final_df.sort_values(by="timestamp", ignore_index=True).to_csv(f"{path}/ohlcv.csv", index=False)
         
         
-    def read_candles(self, start_ts: int, end_ts: int, interval: int, symbol: str):
-        cache_path = f"{Globals.klines_path}/{symbol}/{interval}"
+    def read_candles(self, start_ts: int, end_ts: int, interval: str, symbol: str) -> pandas.DataFrame:
+        """If the given interval for the given symbol or the given symbol is not cached in the klines folder, 
+           the data is downloaded from Binance and the ohlcv data within the the given start_ts-end_ts range is returned
+
+        Args:
+            start_ts (int): Start timestamp (inclusive)
+            end_ts (int): End timestamp (inclusive)
+            interval (str): Interval ENUM
+            symbol (str): Symbol ENUM
+
+        Returns:
+            pandas.DataFrame: A dataframe with columns ["timestamp", "open", "high", "low"," close", "volume"]
+        """
+        candles_path = f"{Globals.klines_path}/{symbol}/{interval}"
         
-        if not os.path.exists(cache_path):
+        if not os.path.exists(candles_path):
             self.download_historical_candles(symbol=symbol, interval=interval)
         
-        ohlcv = pandas.read_csv(f"cache_path/{ohlcv.csv}")
+        # Read candles data
+        ohlcv = pandas.read_csv(f"{candles_path}/ohlcv.csv")
+        
+        # Return the candles that are in the requested range
         ohlcv = ohlcv.loc[(ohlcv.timestamp >= start_ts) & (ohlcv.timestamp <= end_ts)]
         
         return ohlcv
