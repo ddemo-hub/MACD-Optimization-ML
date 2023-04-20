@@ -6,12 +6,11 @@ TBA
 
 ## Installation
 ### Dependencies
-This project is implemented in Python 3.10.6 \
+This project is implemented in Python 3 \
 Python packages used can be found in requirements.txt \
 Using exact versions of the dependencies is recommended to avoid bugs & errors 
 ### Setup
 * __On Linux:__
-  - Run "source setup.sh"
-* __On Windows:__
-  - Install Python 3.10.6
-  - Run "pip install -r requirements.txt" 
+  - Run "make install" if python3 is not installed
+  - Run "make init" to initialize a virtual environment with dependencies installed
+  - You may use "make run" in order to run the main file

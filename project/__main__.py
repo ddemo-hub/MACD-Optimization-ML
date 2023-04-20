@@ -1,4 +1,8 @@
 from src.app.app_container import AppContainer
+from src.utils.globals import Globals 
+from src.utils.logger import Logger
+
+Logger.set_logger_path(f"{Globals.artifacts_path}/logs.txt")
 
 def run(app):
     if app.config_service.application["is_NN"] == True:

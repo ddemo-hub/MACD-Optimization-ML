@@ -1,5 +1,5 @@
-from src.globals import Globals
-from src.singleton import Singleton
+from src.utils.globals import Globals
+from src.utils.singleton import Singleton
 from .config_service import ConfigService
 
 import requests
@@ -11,7 +11,7 @@ class DataService(metaclass=Singleton):
     def __init__(self, config_service: ConfigService):
         self.config_service = config_service
         
-    def download_historical_candles(self, symbol: str, interval: str):
+    def _download_historical_candles(self, symbol: str, interval: str):
         """Download the kline data for the given interval of the given symbol and merge the data into a single csv file
 
         Args:
@@ -79,7 +79,7 @@ class DataService(metaclass=Singleton):
         candles_path = f"{Globals.klines_path}/{symbol}/{interval}"
         
         if not os.path.exists(candles_path):
-            self.download_historical_candles(symbol=symbol, interval=interval)
+            self._download_historical_candles(symbol=symbol, interval=interval)
         
         # Read candles data
         ohlcv = pandas.read_csv(f"{candles_path}/ohlcv.csv")

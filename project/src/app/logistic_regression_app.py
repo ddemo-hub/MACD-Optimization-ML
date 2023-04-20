@@ -1,3 +1,3 @@
 
-class LogisticRegressionApp:
+class LogisticRegressionApp():
     pass

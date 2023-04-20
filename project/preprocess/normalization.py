@@ -24,4 +24,4 @@ def rolling_zscore(column: pandas.Series, window: int, limit: int) -> pandas.Ser
     return rolling_zscores    
 
 
-# Remaining normalization methods will be kept confidential
+# Remaining normalization methods are to be kept confidential
