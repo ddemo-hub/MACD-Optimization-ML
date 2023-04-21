@@ -21,3 +21,10 @@ class AppContainer(metaclass=Singleton):
     data_service = DataService(config_service=ConfigService)
     
     preprocessor = Preprocessor(config_service=config_service, data_service=data_service)
+    
+    logistic_regression_app = LogisticRegressionApp(
+        config_service=config_service, 
+        data_service=data_service, 
+        preprocessor=preprocessor
+    )
+    

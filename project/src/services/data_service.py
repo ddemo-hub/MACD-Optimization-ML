@@ -2,6 +2,8 @@ from src.utils.globals import Globals
 from src.utils.singleton import Singleton
 from .config_service import ConfigService
 
+from src.utils.logger import Logger
+
 import requests
 import shutil
 import pandas
@@ -43,12 +45,16 @@ class DataService(metaclass=Singleton):
                     shutil.unpack_archive(f"{path}/{year}-{month}.zip", path)
                     os.remove(f"{path}/{year}-{month}.zip")
                 elif int(response.status_code % 100) == 4:
-                    print(f"[INFO] URL: '{base_url}/{symbol}-{interval}-{year}-{str(month).zfill(2)}.zip' does not exists")
+                    Logger.warn(f"URL: '{base_url}/{symbol}-{interval}-{year}-{str(month).zfill(2)}.zip' does not exists")
                 elif int(response.status_code % 100) == 5:
-                    raise Exception(f"[ERROR] {response.status_code}: Binance Server Error. Try again later")
+                    error_message = f"{response.status_code}: Binance Server Error. Try again later" 
+                    Logger.error(error_message)
+                    raise Exception(error_message)
         
         if len(os.listdir(path=path)) == 0:
-            raise Exception(f"[ERROR] Something went wrong. 'symbol' or 'interval' parameters might not be correct")
+            error_message = f"Something went wrong. 'symbol' or 'interval' parameters might not be correct"
+            Logger.error(error_message)
+            raise Exception(error_message)
         
         # Merge the data into one csv file
         columns=["timestamp", "open", "high", "low", "close", "volume"]
@@ -79,6 +85,7 @@ class DataService(metaclass=Singleton):
         candles_path = f"{Globals.klines_path}/{symbol}/{interval}"
         
         if not os.path.exists(candles_path):
+            Logger.info(f"Requested interval for the requested symbol ({symbol, interval}) does not exists... Downloading data")
             self._download_historical_candles(symbol=symbol, interval=interval)
         
         # Read candles data
@@ -86,6 +93,9 @@ class DataService(metaclass=Singleton):
         
         # Return the candles that are in the requested range
         ohlcv = ohlcv.loc[(ohlcv.timestamp >= start_ts) & (ohlcv.timestamp <= end_ts)]
-        ohlcv.reset_index(inplace=True)
+        ohlcv.reset_index(drop=True, inplace=True)
+        
+        # Sort the candles by their timestamps in ascending order        
+        ohlcv = ohlcv.sort_values(by="timestamp", ascending=True)
         
         return ohlcv

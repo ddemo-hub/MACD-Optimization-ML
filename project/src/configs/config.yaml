@@ -16,10 +16,19 @@ labeling_parameters:
   macd_slow: 26
   macd_signal: 9
 
+normalization_parameters:
+  standardization_window: 960
+  standardization_limit: 4
 
+training_parameters:
+  training_size: 0.7             # Percantage value between 0 and 1
+  validation_size: 0.2           # Percantage value between 0 and 1
+  test_size: 0.1                 # Percantage value between 0 and 1
 
-
-
+logistic_regression_parameters:
+  batch_size: 32
+  num_epochs: 1000
+  threshold: 0.5
 
 ## Symbols ENUMS:
 # Symbol Enumerations can be found here: https://data.binance.vision/?prefix=data/spot/monthly/klines/
