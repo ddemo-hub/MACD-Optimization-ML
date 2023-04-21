@@ -33,7 +33,7 @@ class LogisticRegressionApp():
         label_batches = self.preprocessor.mini_batch(labels_train)
         
         # Initialize Model
-        model = LogisticRegression(num_features=features.shape[1])
+        model = LogisticRegression(num_features=features.shape[1], regularization=True, constant=1)
         
         # Training Loop
         for epoch in range(self.config_service.logistic_regression_num_epochs):
@@ -47,7 +47,7 @@ class LogisticRegressionApp():
             # Validation Step       
             validation_preds, validation_loss = model.predict(features_validation, self.config_service.logistic_regression_threshold, labels_validation)
             
-            Logger.info(f"[Logistic Regression] Epoch: {epoch} | Training Loss: {training_loss/features_train.shape[0]} | Validation Loss: {validation_loss/features_validation.shape[0]}") 
+            Logger.info(f"[Logistic Regression] Epoch: {epoch} | Training Loss: {training_loss} | Validation Loss: {validation_loss}") 
         
         test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)        
         
@@ -69,7 +69,7 @@ class LogisticRegressionApp():
         feature_batches = self.preprocessor.mini_batch(features_train)
         label_batches = self.preprocessor.mini_batch(labels_train)
         
-        model = LogisticRegression(num_features=features.shape[1], regularization=True, C=0.1)
+        model = LogisticRegression(num_features=features.shape[1], regularization=True, constant=1)
         
         for epoch in range(self.config_service.logistic_regression_num_epochs):
             training_loss = 0

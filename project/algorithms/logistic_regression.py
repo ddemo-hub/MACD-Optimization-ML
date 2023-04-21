@@ -3,11 +3,11 @@ from src.utils.logger import Logger
 import numpy
 
 class LogisticRegression():
-    def __init__(self, num_features: int, regularization: bool=False, C: int=None):
+    def __init__(self, num_features: int, regularization: bool=False, constant: int=None):
         self.weights = numpy.zeros(num_features)
         self.bias = 0
         self.regularization = regularization
-        self.C = C
+        self.constant = constant
 
     def _sigmoid(self, X):
         return 1 / (1 + numpy.exp(-X))
@@ -19,12 +19,12 @@ class LogisticRegression():
         linear_pred = numpy.dot(X, self.weights) + self.bias
         logistic_pred = self._sigmoid(linear_pred)
         
-        dWeights = (1 / X.shape[0]) * numpy.dot(X.T, (logistic_pred - y)) 
+        dWeights = (1 / X.shape[0]) * (X.T @ (logistic_pred - y))
         dBias = (1 / X.shape[0]) * numpy.sum(logistic_pred - y) 
 
         if self.regularization == True:
-            dWeights -= (1 / X.shape[0]) * self.C * self.weights
-            dBias -=  (1 / X.shape[0]) * self.C * self.bias
+            dWeights -= (1 / X.shape[0]) * (self.constant * self.weights)
+            dBias -=  (1 / X.shape[0]) * (self.constant * self.bias)
 
         self.weights -= lr * dWeights
         self.bias -= lr * dBias 
