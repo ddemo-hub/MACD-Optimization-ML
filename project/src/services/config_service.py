@@ -67,6 +67,10 @@ class ConfigService(metaclass=Singleton):
         return self.config["training_parameters"]["test_size"]
     
     @property
+    def logistic_regression_learning_rate(self):
+        return self.config["logistic_regression_parameters"]["learning_rate"]
+    
+    @property
     def logistic_regression_batch_size(self):
         return self.config["logistic_regression_parameters"]["batch_size"]
     

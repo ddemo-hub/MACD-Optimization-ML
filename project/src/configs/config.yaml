@@ -26,7 +26,8 @@ training_parameters:
   test_size: 0.1                 # Percantage value between 0 and 1
 
 logistic_regression_parameters:
-  batch_size: 32
+  learning_rate: 0.00001
+  batch_size: 32                 # Set to 1 to disable mini-batch
   num_epochs: 1000
   threshold: 0.5
 
