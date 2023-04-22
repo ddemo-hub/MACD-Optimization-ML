@@ -42,7 +42,7 @@ class LogisticRegressionApp():
         
         return X
         
-    def main(self):
+    def train(self):
         # Get the preprocessed data
         processed_df = self.preprocessor.prepare_model_inputs()
         
@@ -82,7 +82,7 @@ class LogisticRegressionApp():
                 feature_batch = feature_batches[batch_index]
                 label_batch = label_batches[batch_index]
                 
-                training_loss += model.train(feature_batch, label_batch, lr=learning_rate) 
+                training_loss += model.fit(feature_batch, label_batch, lr=learning_rate) 
             
             # Calculate training loss
             training_loss /= batch_index+1
@@ -105,7 +105,6 @@ class LogisticRegressionApp():
         Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{test_confusion_matrix}") 
 
         Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
-        Logger.info(f"[Logistic Regression] Bias: {model.bias}")
         
         plot_loss(
             training_loss=training_loss_per_epoch, 
@@ -146,7 +145,7 @@ class LogisticRegressionApp():
                 feature_batch = feature_batches[batch_index]
                 label_batch = label_batches[batch_index]
                 
-                training_loss += model.train(feature_batch, label_batch, lr=learning_rate) 
+                training_loss += model.fit(feature_batch, label_batch, lr=learning_rate) 
             
             training_loss /= batch_index+1
             
@@ -162,7 +161,6 @@ class LogisticRegressionApp():
         Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{confusion_matrix(labels_test, numpy.array(test_preds))}") 
         
         Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
-        Logger.info(f"[Logistic Regression] Bias: {model.bias}")
         
         plot_loss(
             training_loss=training_loss_per_epoch, 

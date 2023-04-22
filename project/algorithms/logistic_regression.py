@@ -15,7 +15,7 @@ class LogisticRegression():
     def _log_loss(self, pred, ground):
         return numpy.sum(ground * numpy.log(pred) + (1 - ground) * numpy.log(1 - pred)) / -len(pred)
     
-    def train(self, X: numpy.ndarray, y: numpy.ndarray, lr: float):
+    def fit(self, X: numpy.ndarray, y: numpy.ndarray, lr: float):
         X = numpy.hstack((numpy.ones((X.shape[0], 1)), X))
         
         linear_pred = numpy.dot(X, self.weights)

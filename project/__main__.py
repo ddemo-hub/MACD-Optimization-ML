@@ -10,7 +10,7 @@ def run(app):
     elif app.config_service.application["is_random_forest"] == True:
         pass
     elif app.config_service.application["is_logistic_regression"] == True:
-        app.logistic_regression_app.main()
+        app.logistic_regression_app.train()
 
 if __name__ == "__main__":
     run(app=AppContainer)

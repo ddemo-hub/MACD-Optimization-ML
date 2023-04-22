@@ -12,4 +12,4 @@ class Globals(metaclass=Singleton):
     project_path = pathlib.Path(__file__).parent.parent.parent
     
     artifacts_path = f"{project_path.parent}/artifacts/{DATETIME_NOW}"
-    klines_path = f"{project_path}/klines"
+    klines_path = f"{project_path.parent}/klines"
