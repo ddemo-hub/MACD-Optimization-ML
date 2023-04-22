@@ -95,6 +95,10 @@ class ConfigService(metaclass=Singleton):
         return self.config["logistic_regression_parameters"]["constant"]
        
     @property
+    def logistic_regression_class_weights(self):
+        return self.config["logistic_regression_parameters"]["class_weights"]
+       
+    @property
     def logistic_regression_transformation(self):
         return self.config["logistic_regression_parameters"]["transformation"]
        

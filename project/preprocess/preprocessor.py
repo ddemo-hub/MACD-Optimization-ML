@@ -35,7 +35,7 @@ class Preprocessor(metaclass=Singleton):
     def mini_batch(self, input_array: numpy.ndarray):
         return numpy.array_split(input_array, self.config_service.logistic_regression_batch_size)
     
-    def normalize_data(self, input_df: pandas.DataFrame):
+    def normalize_features(self, input_df: pandas.DataFrame):
         feature_columns = input_df.columns[~(input_df.columns.isin(["timestamp", "label"]))]
         
         # Zscore
@@ -55,7 +55,7 @@ class Preprocessor(metaclass=Singleton):
         
         return input_df
     
-    def prepare_model_inputs(self):
+    def prepare_features(self):
         # Read OHLCV data from the recordings
         candles_df = self.data_service.read_candles(
             start_ts=self.config_service.start_ts, 
@@ -82,7 +82,7 @@ class Preprocessor(metaclass=Singleton):
         candles_df = feature_builder.candles_df 
         
         # Normalize the data
-        candles_df = self.normalize_data(input_df=candles_df)
+        candles_df = self.normalize_features(input_df=candles_df)
         
         # Drop unlabeled candles
         candles_df = candles_df.loc[candles_df.label.isin([1,2])]

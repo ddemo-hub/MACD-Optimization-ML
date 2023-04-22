@@ -3,18 +3,24 @@ from src.utils.logger import Logger
 import numpy
 
 class LogisticRegression():
-    def __init__(self, num_features: int, regularization: bool=False, constant: int=1, stochastic: bool=False):
+    def __init__(self, num_features: int, regularization: bool=False, constant: int=1, stochastic: bool=False, class_weights: dict=None):
         self.weights = numpy.zeros(num_features+1)
         self.regularization = regularization
         self.constant = constant
         self.stochastic = stochastic
-
+        self.cw = class_weights
+        
     def _sigmoid(self, X):
         return 1 / (1 + numpy.exp(-X))
     
     def _log_loss(self, pred, ground):
-        return numpy.sum(ground * numpy.log(pred) + (1 - ground) * numpy.log(1 - pred)) / -len(pred)
-    
+        loss = numpy.sum(ground * numpy.log(pred) + (1 - ground) * numpy.log(1 - pred)) / -len(ground)
+
+        if self.regularization == True:
+            loss += ((self.constant / len(ground) / 2) * (self.weights.T @ self.weights))
+        
+        return loss
+            
     def fit(self, X: numpy.ndarray, y: numpy.ndarray, lr: float):
         X = numpy.hstack((numpy.ones((X.shape[0], 1)), X))
         
@@ -23,9 +29,15 @@ class LogisticRegression():
         
         if self.stochastic == True:
             rand = numpy.random.randint(low=0, high=X.shape[0]-1) 
-            dWeights = X[rand] * (logistic_pred[rand]- y[rand])
+            if self.cw is None:
+                dWeights = X[rand] * (logistic_pred[rand]- y[rand])
+            else:
+                dWeights = X[rand] * ((self.cw[0]*y[rand]*(logistic_pred[rand]-1)) + (self.cw[1]*logistic_pred[rand]*(1-y[rand])))
         else:
-            dWeights = (1 / X.shape[0]) * (X.T @ (logistic_pred - y))
+            if self.cw is None:
+                dWeights = (1 / X.shape[0]) * (X.T @ (logistic_pred - y))
+            else:
+                dWeights = (1 / X.shape[0]) * (X.T @ ((self.cw[0]*y*(logistic_pred-1)) + (self.cw[1]*logistic_pred*(1-y))))
         
         if self.regularization == True:
             dWeights -= (1 / X.shape[0]) * (self.constant * self.weights)

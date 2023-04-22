@@ -44,8 +44,8 @@ class LogisticRegressionApp():
         
     def train(self):
         # Get the preprocessed data
-        processed_df = self.preprocessor.prepare_model_inputs()
-        
+        processed_df = self.preprocessor.prepare_features()
+
         timestamps = processed_df["timestamp"].to_numpy()
         labels = processed_df["label"].to_numpy()
         features =  processed_df[processed_df.columns.drop(["timestamp", "label"])].to_numpy()
@@ -64,11 +64,17 @@ class LogisticRegressionApp():
         label_batches = self.preprocessor.mini_batch(labels_train)
         
         # Initialize Model
+        class_weights = None
+        if self.config_service.logistic_regression_class_weights:
+            from sklearn.utils.class_weight import compute_class_weight
+            class_weights = compute_class_weight(class_weight="balanced", classes=numpy.unique(labels_train), y=labels_train)
+        
         model = LogisticRegression(
             num_features=features.shape[1], 
             regularization=self.config_service.logistic_regression_regularization, 
             constant=self.config_service.logistic_regression_constant,
-            stochastic=self.config_service.logistic_regression_stochastic
+            stochastic=self.config_service.logistic_regression_stochastic,
+            class_weights=class_weights
         )
         
         # Training Loop
@@ -129,11 +135,17 @@ class LogisticRegressionApp():
         feature_batches = self.preprocessor.mini_batch(features_train)
         label_batches = self.preprocessor.mini_batch(labels_train)
         
+        class_weights = None
+        if self.config_service.logistic_regression_class_weights:
+            from sklearn.utils.class_weight import compute_class_weight
+            class_weights = compute_class_weight(class_weight="balanced", classes=numpy.unique(labels_train), y=labels_train)
+        
         model = LogisticRegression(
             num_features=features.shape[1], 
             regularization=self.config_service.logistic_regression_regularization, 
             constant=self.config_service.logistic_regression_constant,
-            stochastic=self.config_service.logistic_regression_stochastic
+            stochastic=self.config_service.logistic_regression_stochastic,
+            class_weights=class_weights
         )
         
         learning_rate = self.config_service.logistic_regression_learning_rate

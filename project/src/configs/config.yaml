@@ -27,13 +27,14 @@ training_parameters:
 
 logistic_regression_parameters:
   learning_rate: 0.0001
-  batch_size: 128                 # Set to 1 to disable mini-batch
+  batch_size: 128                # Set to 1 to disable mini-batch
   num_epochs: 500
   threshold: 0.5
   stochastic: False
   regularization: True
   constant: 10
-  transformation: ["RBF", "TRIG"]        # {"TRIG", "POLY", "RBF"}
+  class_weights: False
+  transformation: ["RBF", "TRIG", "POLY2"]        # {"TRIG", "POLY", "RBF"}
 
 ## Symbols ENUMS:
 # Symbol Enumerations can be found here: https://data.binance.vision/?prefix=data/spot/monthly/klines/
