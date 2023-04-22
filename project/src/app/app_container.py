@@ -7,7 +7,7 @@ from preprocess.preprocessor import Preprocessor
 
 from .logistic_regression_app import LogisticRegressionApp
 from .random_forest_app import RandomForestApp
-from .nn_app import NeuralNetworkApp
+from .k_nearest_neighbor_app import KNearestNeighborApp
 
 from dataclasses import dataclass
 
@@ -24,7 +24,10 @@ class AppContainer(metaclass=Singleton):
     
     logistic_regression_app = LogisticRegressionApp(
         config_service=config_service, 
-        data_service=data_service, 
         preprocessor=preprocessor
     )
     
+    k_nearest_neighbor_app = KNearestNeighborApp(
+        config_service=config_service,
+        preprocessor=preprocessor
+    )

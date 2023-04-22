@@ -103,6 +103,18 @@ class ConfigService(metaclass=Singleton):
         return self.config["logistic_regression_parameters"]["transformation"]
        
     @property
+    def k_nearest_neighnor_k(self):
+        return self.config["k_nearest_neighbor_parameters"]["k"]
+
+    @property
+    def k_nearest_neighnor_undersample(self):
+        return self.config["k_nearest_neighbor_parameters"]["undersample"]
+
+    @property
+    def k_nearest_neighnor_oversample(self):
+        return self.config["k_nearest_neighbor_parameters"]["oversample"]
+       
+    @property
     def is_confidential(self):
         return self.feature_config["is_confidential"]
     

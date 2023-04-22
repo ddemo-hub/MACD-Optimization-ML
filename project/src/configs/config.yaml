@@ -1,7 +1,7 @@
 application:
-  is_NN: False
+  is_k_nearest_neighbor: True
   is_random_forest: False
-  is_logistic_regression: True
+  is_logistic_regression: False
 
 binance_data_url: https://data.binance.vision/data/spot/monthly/klines
 
@@ -35,6 +35,12 @@ logistic_regression_parameters:
   constant: 10
   class_weights: False
   transformation: ["RBF", "TRIG", "POLY2"]        # {"TRIG", "POLY", "RBF"}
+
+k_nearest_neighbor_parameters:
+  k: 3
+  oversample: False
+  undersample: False
+  
 
 ## Symbols ENUMS:
 # Symbol Enumerations can be found here: https://data.binance.vision/?prefix=data/spot/monthly/klines/

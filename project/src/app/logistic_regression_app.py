@@ -1,5 +1,4 @@
 from src.services.config_service import ConfigService
-from src.services.data_service import DataService
 
 from preprocess.preprocessor import Preprocessor
 
@@ -14,9 +13,8 @@ import shutil
 import numpy
 
 class LogisticRegressionApp():
-    def __init__(self, config_service: ConfigService, data_service: DataService, preprocessor: Preprocessor):
+    def __init__(self, config_service: ConfigService, preprocessor: Preprocessor):
         self.config_service = config_service
-        self.data_service = data_service
         self.preprocessor = preprocessor
     
     def RBF(self, X, gamma=None):
@@ -103,7 +101,7 @@ class LogisticRegressionApp():
             validation_loss_per_epoch.append(validation_loss)
             validation_f1_score_per_epoch.append(validation_f1)
             
-        # Test Step
+        # Test Model
         test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)        
         test_confusion_matrix = confusion_matrix(labels_test, numpy.array(test_preds))
         test_f1 = f1_macro(labels_test, numpy.array(test_preds))
