@@ -30,6 +30,7 @@ logistic_regression_parameters:
   batch_size: 128                 # Set to 1 to disable mini-batch
   num_epochs: 500
   threshold: 0.5
+  stochastic: False
   regularization: True
   constant: 10
   transformation: ["RBF", "TRIG"]        # {"TRIG", "POLY", "RBF"}

@@ -20,11 +20,9 @@ class LogisticRegressionApp():
         self.preprocessor = preprocessor
     
     def RBF(self, X, gamma=None):
-        # Free parameter gamma
         if gamma == None:
             gamma = 1.0/X.shape[1]
-            
-        # RBF kernel Equation
+                        
         K = numpy.exp(-gamma * numpy.sum((X - X[:,numpy.newaxis])**2, axis = -1))
 
         return K
@@ -69,10 +67,12 @@ class LogisticRegressionApp():
         model = LogisticRegression(
             num_features=features.shape[1], 
             regularization=self.config_service.logistic_regression_regularization, 
-            constant=self.config_service.logistic_regression_constant
+            constant=self.config_service.logistic_regression_constant,
+            stochastic=self.config_service.logistic_regression_stochastic
         )
         
         # Training Loop
+        learning_rate = self.config_service.logistic_regression_learning_rate
         training_loss_per_epoch = []
         validation_loss_per_epoch = []
         validation_f1_score_per_epoch = []
@@ -82,7 +82,7 @@ class LogisticRegressionApp():
                 feature_batch = feature_batches[batch_index]
                 label_batch = label_batches[batch_index]
                 
-                training_loss += model.train(feature_batch, label_batch, lr=self.config_service.logistic_regression_learning_rate) 
+                training_loss += model.train(feature_batch, label_batch, lr=learning_rate) 
             
             # Calculate training loss
             training_loss /= batch_index+1
@@ -115,6 +115,7 @@ class LogisticRegressionApp():
         )
         shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
         
+        
     def breast_cancer(self):
         from sklearn.datasets import load_breast_cancer
         
@@ -122,8 +123,6 @@ class LogisticRegressionApp():
         
         features = dataset.data
         labels = dataset.target
-        
-        #features = self.RBF(features)
         
         features_train, features_validation, features_test = self.preprocessor.timeseries_split(features) 
         labels_train, labels_validation, labels_test = self.preprocessor.timeseries_split(labels) 
@@ -134,9 +133,11 @@ class LogisticRegressionApp():
         model = LogisticRegression(
             num_features=features.shape[1], 
             regularization=self.config_service.logistic_regression_regularization, 
-            constant=self.config_service.logistic_regression_constant
+            constant=self.config_service.logistic_regression_constant,
+            stochastic=self.config_service.logistic_regression_stochastic
         )
         
+        learning_rate = self.config_service.logistic_regression_learning_rate
         training_loss_per_epoch = []
         validation_loss_per_epoch = []
         for epoch in range(1, self.config_service.logistic_regression_num_epochs+1):
@@ -145,7 +146,7 @@ class LogisticRegressionApp():
                 feature_batch = feature_batches[batch_index]
                 label_batch = label_batches[batch_index]
                 
-                training_loss += model.train(feature_batch, label_batch, lr=self.config_service.logistic_regression_learning_rate) 
+                training_loss += model.train(feature_batch, label_batch, lr=learning_rate) 
             
             training_loss /= batch_index+1
             

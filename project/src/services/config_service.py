@@ -83,6 +83,10 @@ class ConfigService(metaclass=Singleton):
         return self.config["logistic_regression_parameters"]["threshold"]
     
     @property
+    def logistic_regression_stochastic(self):
+        return self.config["logistic_regression_parameters"]["stochastic"]
+    
+    @property
     def logistic_regression_regularization(self):
         return self.config["logistic_regression_parameters"]["regularization"]
 
