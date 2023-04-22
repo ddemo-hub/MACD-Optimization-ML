@@ -83,6 +83,18 @@ class ConfigService(metaclass=Singleton):
         return self.config["logistic_regression_parameters"]["threshold"]
     
     @property
+    def logistic_regression_regularization(self):
+        return self.config["logistic_regression_parameters"]["regularization"]
+
+    @property
+    def logistic_regression_constant(self):
+        return self.config["logistic_regression_parameters"]["constant"]
+       
+    @property
+    def logistic_regression_transformation(self):
+        return self.config["logistic_regression_parameters"]["transformation"]
+       
+    @property
     def is_confidential(self):
         return self.feature_config["is_confidential"]
     

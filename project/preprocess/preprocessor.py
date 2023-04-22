@@ -73,15 +73,13 @@ class Preprocessor(metaclass=Singleton):
         )
         
         # Add features
-        builder = FeatureBuilder(input_df=candles_df)
-        try:
-            if self.config_service.is_confidential == True:
-                # If is_confidential is True, read features data from a .csv file 
-                builder.read_features(f"{Globals.klines_path}/{self.config_service.symbol}/{self.config_service.interval}/features.csv")
-            else:
-                builder.build_all()
-        except:
-            pass
+        feature_builder = FeatureBuilder(input_df=candles_df)
+        if self.config_service.is_confidential == True:
+            # If is_confidential is True, read features data from a .csv file 
+            feature_builder.read_features(f"{Globals.klines_path}/{self.config_service.symbol}/{self.config_service.interval}/features.csv")
+        else:
+            feature_builder.build_all()
+        candles_df = feature_builder.candles_df 
         
         # Normalize the data
         candles_df = self.normalize_data(input_df=candles_df)

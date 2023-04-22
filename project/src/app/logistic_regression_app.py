@@ -5,8 +5,12 @@ from preprocess.preprocessor import Preprocessor
 
 from algorithms.logistic_regression import LogisticRegression
 
+from src.utils.globals import Globals
 from src.utils.logger import Logger
 
+from algorithms.commons.evaluators import f1_macro, confusion_matrix, plot_loss
+
+import shutil
 import numpy
 
 class LogisticRegressionApp():
@@ -14,15 +18,44 @@ class LogisticRegressionApp():
         self.config_service = config_service
         self.data_service = data_service
         self.preprocessor = preprocessor
+    
+    def RBF(self, X, gamma=None):
+        # Free parameter gamma
+        if gamma == None:
+            gamma = 1.0/X.shape[1]
+            
+        # RBF kernel Equation
+        K = numpy.exp(-gamma * numpy.sum((X - X[:,numpy.newaxis])**2, axis = -1))
+
+        return K
+    
+    def POLY(self, X, degree):
+        original_axis = X.shape[1]
+        for d in range(2, degree+1):
+            X = numpy.hstack((X, (X[:, :original_axis]**d)))
+        
+        return X
+    
+    def TRIG(self, X):
+        sin = numpy.sin(X)
+        cos = numpy.cos(X)
+        
+        X = numpy.hstack((X, sin, cos))
+        
+        return X
         
     def main(self):
         # Get the preprocessed data
         processed_df = self.preprocessor.prepare_model_inputs()
+        
         timestamps = processed_df["timestamp"].to_numpy()
         labels = processed_df["label"].to_numpy()
         features =  processed_df[processed_df.columns.drop(["timestamp", "label"])].to_numpy()
         
         # Non-Linear Transformation
+        features = self.RBF(features)
+        features = self.TRIG(features)
+        features = self.POLY(features, 2)
         
         # Train-Validation-Test Split
         features_train, features_validation, features_test = self.preprocessor.timeseries_split(features) 
@@ -33,10 +66,17 @@ class LogisticRegressionApp():
         label_batches = self.preprocessor.mini_batch(labels_train)
         
         # Initialize Model
-        model = LogisticRegression(num_features=features.shape[1], regularization=True, constant=1)
+        model = LogisticRegression(
+            num_features=features.shape[1], 
+            regularization=self.config_service.logistic_regression_regularization, 
+            constant=self.config_service.logistic_regression_constant
+        )
         
         # Training Loop
-        for epoch in range(self.config_service.logistic_regression_num_epochs):
+        training_loss_per_epoch = []
+        validation_loss_per_epoch = []
+        validation_f1_score_per_epoch = []
+        for epoch in range(1, self.config_service.logistic_regression_num_epochs+1):
             training_loss = 0
             for batch_index in range(len(feature_batches)):
                 feature_batch = feature_batches[batch_index]
@@ -44,24 +84,46 @@ class LogisticRegressionApp():
                 
                 training_loss += model.train(feature_batch, label_batch, lr=self.config_service.logistic_regression_learning_rate) 
             
+            # Calculate training loss
+            training_loss /= batch_index+1
+            
             # Validation Step       
             validation_preds, validation_loss = model.predict(features_validation, self.config_service.logistic_regression_threshold, labels_validation)
+            validation_f1 = f1_macro(labels_validation, numpy.array(validation_preds))
             
-            Logger.info(f"[Logistic Regression] Epoch: {epoch} | Training Loss: {training_loss} | Validation Loss: {validation_loss}") 
-        
+            # End epoch
+            Logger.info(f"[Logistic Regression] Epoch: {epoch} | Training Loss: {training_loss} | Validation Loss: {validation_loss} | Validation F1 Score: {validation_f1}") 
+            training_loss_per_epoch.append(training_loss)
+            validation_loss_per_epoch.append(validation_loss)
+            validation_f1_score_per_epoch.append(validation_f1)
+            
+        # Test Step
         test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)        
-        
-        Logger.info(f"[Logistic Regression] Weights: {model.weights}")
+        test_confusion_matrix = confusion_matrix(labels_test, numpy.array(test_preds))
+        test_f1 = f1_macro(labels_test, numpy.array(test_preds))
+        Logger.info(f"[Logistic Regression] Test F1 Score: {test_f1}") 
+        Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{test_confusion_matrix}") 
+
+        Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
         Logger.info(f"[Logistic Regression] Bias: {model.bias}")
+        
+        plot_loss(
+            training_loss=training_loss_per_epoch, 
+            validation_loss=validation_loss_per_epoch, 
+            num_epoch=self.config_service.logistic_regression_num_epochs, 
+            savefig_path=f"{Globals.artifacts_path}/loss.png"
+        )
+        shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
         
     def breast_cancer(self):
         from sklearn.datasets import load_breast_cancer
-        from sklearn.metrics import f1_score
         
         dataset = load_breast_cancer()
         
         features = dataset.data
         labels = dataset.target
+        
+        #features = self.RBF(features)
         
         features_train, features_validation, features_test = self.preprocessor.timeseries_split(features) 
         labels_train, labels_validation, labels_test = self.preprocessor.timeseries_split(labels) 
@@ -69,9 +131,15 @@ class LogisticRegressionApp():
         feature_batches = self.preprocessor.mini_batch(features_train)
         label_batches = self.preprocessor.mini_batch(labels_train)
         
-        model = LogisticRegression(num_features=features.shape[1], regularization=True, constant=1)
+        model = LogisticRegression(
+            num_features=features.shape[1], 
+            regularization=self.config_service.logistic_regression_regularization, 
+            constant=self.config_service.logistic_regression_constant
+        )
         
-        for epoch in range(self.config_service.logistic_regression_num_epochs):
+        training_loss_per_epoch = []
+        validation_loss_per_epoch = []
+        for epoch in range(1, self.config_service.logistic_regression_num_epochs+1):
             training_loss = 0
             for batch_index in range(len(feature_batches)):
                 feature_batch = feature_batches[batch_index]
@@ -79,11 +147,26 @@ class LogisticRegressionApp():
                 
                 training_loss += model.train(feature_batch, label_batch, lr=self.config_service.logistic_regression_learning_rate) 
             
+            training_loss /= batch_index+1
+            
             validation_preds, validation_loss = model.predict(features_validation, self.config_service.logistic_regression_threshold, labels_validation)
-            validation_f1 = f1_score(list(labels_validation), validation_preds, average='macro')
+            validation_f1 = f1_macro(labels_validation, numpy.array(validation_preds))
             
-            print(f"[Logistic Regression] Epoch: {epoch} | Training Loss: {training_loss} | Validation Loss: {validation_loss} | Validation F1 Score: {validation_f1}") 
-
+            Logger.info(f"[Logistic Regression] Epoch: {epoch} | Training Loss: {training_loss} | Validation Loss: {validation_loss} | Validation F1 Score: {validation_f1}") 
+            training_loss_per_epoch.append(training_loss)
+            validation_loss_per_epoch.append(validation_loss)
+        
         test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)
-        print(f"[Logistic Regression] F1 Score: {f1_score(list(labels_test), test_preds, average='macro')}") 
-            
+        Logger.info(f"[Logistic Regression] Test F1 Score: {f1_macro(labels_test, numpy.array(test_preds))}") 
+        Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{confusion_matrix(labels_test, numpy.array(test_preds))}") 
+        
+        Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
+        Logger.info(f"[Logistic Regression] Bias: {model.bias}")
+        
+        plot_loss(
+            training_loss=training_loss_per_epoch, 
+            validation_loss=validation_loss_per_epoch, 
+            num_epoch=self.config_service.logistic_regression_num_epochs, 
+            savefig_path=f"{Globals.artifacts_path}/loss.png"
+        )
+        shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
