@@ -7,7 +7,7 @@ from algorithms.logistic_regression import LogisticRegression
 from src.utils.globals import Globals
 from src.utils.logger import Logger
 
-from algorithms.commons.evaluators import f1_macro, confusion_matrix, plot_loss
+from algorithms.commons.evaluators import f1_macro, confusion_matrix, plot_loss, plot_f1
 
 import shutil
 import numpy
@@ -116,6 +116,11 @@ class LogisticRegressionApp():
             num_epoch=self.config_service.logistic_regression_num_epochs, 
             savefig_path=f"{Globals.artifacts_path}/loss.png"
         )
+        plot_f1(
+            f1_scores=validation_f1_score_per_epoch,
+            num_epoch=self.config_service.logistic_regression_num_epochs, 
+            savefig_path=f"{Globals.artifacts_path}/f1.png"
+        )
         shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
         
         
@@ -149,6 +154,7 @@ class LogisticRegressionApp():
         learning_rate = self.config_service.logistic_regression_learning_rate
         training_loss_per_epoch = []
         validation_loss_per_epoch = []
+        validation_f1_score_per_epoch = []
         for epoch in range(1, self.config_service.logistic_regression_num_epochs+1):
             training_loss = 0
             for batch_index in range(len(feature_batches)):
@@ -165,7 +171,8 @@ class LogisticRegressionApp():
             Logger.info(f"[Logistic Regression] Epoch: {epoch} | Training Loss: {training_loss} | Validation Loss: {validation_loss} | Validation F1 Score: {validation_f1}") 
             training_loss_per_epoch.append(training_loss)
             validation_loss_per_epoch.append(validation_loss)
-        
+            validation_f1_score_per_epoch.append(validation_f1)
+            
         test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)
         Logger.info(f"[Logistic Regression] Test F1 Score: {f1_macro(labels_test, numpy.array(test_preds))}") 
         Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{confusion_matrix(labels_test, numpy.array(test_preds))}") 
@@ -177,5 +184,10 @@ class LogisticRegressionApp():
             validation_loss=validation_loss_per_epoch, 
             num_epoch=self.config_service.logistic_regression_num_epochs, 
             savefig_path=f"{Globals.artifacts_path}/loss.png"
+        )
+        plot_f1(
+            f1_scores=validation_f1_score_per_epoch,
+            num_epoch=self.config_service.logistic_regression_num_epochs, 
+            savefig_path=f"{Globals.artifacts_path}/f1.png"
         )
         shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")

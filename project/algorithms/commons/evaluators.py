@@ -47,3 +47,19 @@ def plot_loss(training_loss: list[float], validation_loss: list[float], num_epoc
     except UserWarning as error:
         print(f"{error}\nUnable to show the Loss Graph interactivaly")
     
+def plot_f1(f1_scores: list[float], num_epoch: int, savefig_path: str):
+    plt.title('F1 Score')
+    
+    plt.plot(range(1, num_epoch+1), f1_scores, label='F1 Scores')
+    
+    plt.legend(loc='best')
+    
+    plt.xlabel('Epochs')
+    plt.ylabel('F1 Score')
+    
+    plt.savefig(savefig_path)
+
+    try:
+        plt.show()
+    except UserWarning as error:
+        print(f"{error}\nUnable to show the Loss Graph interactivaly")
