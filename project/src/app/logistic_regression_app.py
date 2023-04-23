@@ -108,7 +108,8 @@ class LogisticRegressionApp():
         Logger.info(f"[Logistic Regression] Test F1 Score: {test_f1}") 
         Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{test_confusion_matrix}") 
 
-        Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
+        with numpy.printoptions(threshold=numpy.inf):
+            Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
         
         plot_loss(
             training_loss=training_loss_per_epoch, 
@@ -177,7 +178,8 @@ class LogisticRegressionApp():
         Logger.info(f"[Logistic Regression] Test F1 Score: {f1_macro(labels_test, numpy.array(test_preds))}") 
         Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{confusion_matrix(labels_test, numpy.array(test_preds))}") 
         
-        Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
+        with numpy.printoptions(threshold=numpy.inf):
+            Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
         
         plot_loss(
             training_loss=training_loss_per_epoch, 
