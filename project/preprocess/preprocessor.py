@@ -19,10 +19,11 @@ class Preprocessor(metaclass=Singleton):
         self.data_service = data_service
     
     def timeseries_split(self, input_array: numpy.ndarray) -> tuple[numpy.ndarray]:
-        """ 
+        """
         Returns:
             Tuple(numpy.ndarray): Returns train, valdiation and test datasets at indicies [0, 1, 2] 
-        """
+        """ 
+
         num_samples = input_array.shape[0]
         split_sizes = [
             int(num_samples * self.config_service.training_size), 
@@ -76,7 +77,7 @@ class Preprocessor(metaclass=Singleton):
         feature_builder = FeatureBuilder(input_df=candles_df)
         if self.config_service.is_confidential == True:
             # If is_confidential is True, read features data from a .csv file 
-            feature_builder.read_features(f"{Globals.klines_path}/{self.config_service.symbol}/{self.config_service.interval}/features.csv")
+            feature_builder.read_features(Globals.klines_path.joinpath(self.config_service.symbol, self.config_service.interval, "features.csv"))
         else:
             feature_builder.build_all()
         candles_df = feature_builder.candles_df 

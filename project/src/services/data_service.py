@@ -24,8 +24,8 @@ class DataService(metaclass=Singleton):
             Exception: If there is a server-side error at Binance endpoint
             Exception: If no data is found to be downloaded, the parameters given may be the cause
         """
-        path = f"{Globals.klines_path}/{symbol}/{interval}"
-        os.makedirs(path=path)
+        path = Globals.klines_path.joinpath(symbol, interval)
+        os.makedirs(path, exist_ok=True)
         
         base_url = f"{self.config_service.binance_data_url}/{symbol}/{interval}"
         
@@ -39,11 +39,12 @@ class DataService(metaclass=Singleton):
                 
                 # If the data exists, unpack the data
                 if response.status_code == 200:
-                    with open(f"{path}/{year}-{month}.zip", "wb") as f:
+                    zip_path = path.joinpath(f"{year}-{str(month).zfill(2)}.zip")
+                    with open(zip_path, "wb") as f:
                         f.write(response.content)
                     
-                    shutil.unpack_archive(f"{path}/{year}-{month}.zip", path)
-                    os.remove(f"{path}/{year}-{month}.zip")
+                    shutil.unpack_archive(zip_path, path)
+                    os.remove(zip_path)
                 elif int(response.status_code % 100) == 4:
                     Logger.warn(f"URL: '{base_url}/{symbol}-{interval}-{year}-{str(month).zfill(2)}.zip' does not exists")
                 elif int(response.status_code % 100) == 5:
@@ -60,13 +61,13 @@ class DataService(metaclass=Singleton):
         columns=["timestamp", "open", "high", "low", "close", "volume"]
         final_df = pandas.DataFrame(columns=columns)
         for csv_path in sorted(os.listdir(path=path)):
-            current_file = pandas.read_csv(f"{path}/{csv_path}", header=None, names=columns + ["ct", "qav", "not", "tbbav", "tbqav", "ig"])            
+            current_file = pandas.read_csv(path.joinpath(csv_path), header=None, names=columns+["ct", "qav", "not", "tbbav", "tbqav", "ig"])            
             final_df = pandas.concat([final_df, current_file[columns]], axis=0)
         
-        [os.remove(f"{path}/{csv_path_}") for csv_path_ in os.listdir(path=path)]
+        [os.remove(path.joinpath(csv_path_)) for csv_path_ in os.listdir(path=path)]
         
         # Save the final csv
-        final_df.sort_values(by="timestamp", ignore_index=True).to_csv(f"{path}/ohlcv.csv", index=False)
+        final_df.sort_values(by="timestamp", ignore_index=True).to_csv(path.joinpath('ohlcv.csv'), index=False)
         
         
     def read_candles(self, start_ts: int, end_ts: int, interval: str, symbol: str) -> pandas.DataFrame:
@@ -82,14 +83,14 @@ class DataService(metaclass=Singleton):
         Returns:
             pandas.DataFrame: A dataframe with columns ["timestamp", "open", "high", "low"," close", "volume"]
         """
-        candles_path = f"{Globals.klines_path}/{symbol}/{interval}"
+        candles_path = Globals.klines_path.joinpath(symbol, interval)
         
         if not os.path.exists(candles_path):
             Logger.info(f"Requested interval for the requested symbol ({symbol, interval}) does not exists... Downloading data")
             self._download_historical_candles(symbol=symbol, interval=interval)
         
         # Read candles data
-        ohlcv = pandas.read_csv(f"{candles_path}/ohlcv.csv")
+        ohlcv = pandas.read_csv(candles_path.joinpath('ohlcv.csv'))
         
         # Return the candles that are in the requested range
         ohlcv = ohlcv.loc[(ohlcv.timestamp >= start_ts) & (ohlcv.timestamp <= end_ts)]

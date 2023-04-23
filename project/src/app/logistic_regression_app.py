@@ -115,15 +115,15 @@ class LogisticRegressionApp():
             training_loss=training_loss_per_epoch, 
             validation_loss=validation_loss_per_epoch, 
             num_epoch=self.config_service.logistic_regression_num_epochs, 
-            savefig_path=f"{Globals.artifacts_path}/loss.png"
+            savefig_path=Globals.artifacts_path.joinpath("loss.png")
         )
         plot_f1(
             f1_scores=validation_f1_score_per_epoch,
             num_epoch=self.config_service.logistic_regression_num_epochs, 
-            savefig_path=f"{Globals.artifacts_path}/f1.png"
+            savefig_path=Globals.artifacts_path.joinpath("f1.png")
         )
-        shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
-        
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+
         
     def breast_cancer(self):
         from sklearn.datasets import load_breast_cancer
@@ -185,11 +185,11 @@ class LogisticRegressionApp():
             training_loss=training_loss_per_epoch, 
             validation_loss=validation_loss_per_epoch, 
             num_epoch=self.config_service.logistic_regression_num_epochs, 
-            savefig_path=f"{Globals.artifacts_path}/loss.png"
+            savefig_path=Globals.artifacts_path.joinpath("loss.png")
         )
         plot_f1(
             f1_scores=validation_f1_score_per_epoch,
             num_epoch=self.config_service.logistic_regression_num_epochs, 
-            savefig_path=f"{Globals.artifacts_path}/f1.png"
+            savefig_path=Globals.artifacts_path.joinpath("f1.png")
         )
-        shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))

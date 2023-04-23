@@ -1,9 +1,10 @@
 from src.utils.singleton import Singleton
 
+import pathlib
 import yaml 
 
 class ConfigService(metaclass=Singleton):
-    def __init__(self, config: str, feature_config: str):
+    def __init__(self, config: pathlib.Path, feature_config: pathlib.Path):
         # Read config files
         with open(config, "r") as config_file:
             self.config = yaml.safe_load(config_file)

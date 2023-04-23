@@ -55,7 +55,8 @@ class KNearestNeighborApp():
         Logger.info(f"[K Nearest Neighbor] Test F1 Score: {test_f1}") 
         Logger.info(f"[K Nearest Neighbor] Test Confusion Matrix: \n{test_confusion_matrix}") 
         
-        shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+
 
     def breast_cancer(self):
         from sklearn.datasets import load_breast_cancer
@@ -93,4 +94,4 @@ class KNearestNeighborApp():
         Logger.info(f"[K Nearest Neighbor] Test F1 Score: {test_f1}") 
         Logger.info(f"[K Nearest Neighbor] Test Confusion Matrix: \n{test_confusion_matrix}") 
         
-        shutil.copyfile(f"{Globals.project_path}/src/configs/config.yaml", f"{Globals.artifacts_path}/config.yamlignore")
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))

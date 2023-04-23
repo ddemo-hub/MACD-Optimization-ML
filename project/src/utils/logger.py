@@ -1,17 +1,18 @@
 from datetime import datetime
+import pathlib
 import os
 
 class Logger:
     logger_path: str
     
     @classmethod
-    def set_logger_path(cls, path: str) -> None:
+    def set_logger_path(cls, path: pathlib.Path) -> None:
         log_time = datetime.now().strftime("%Y/%m/%d %H.%M.%S")
         try:
             with open(path, "w") as log_file:
                 log_file.write(f"[{log_time}]Logger created at -> {path}\n")
         except FileNotFoundError:
-            directory_path = "".join(path.rpartition("/")[:-1])
+            directory_path = path.parent
             os.makedirs(directory_path)
             
             with open(path, "w") as log_file:
