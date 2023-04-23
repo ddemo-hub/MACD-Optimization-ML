@@ -37,7 +37,7 @@ logistic_regression_parameters:
   transformation: ["RBF", "TRIG", "POLY2"]        # {"TRIG", "POLY", "RBF"}
 
 k_nearest_neighbor_parameters:
-  k: 3
+  k: [1, 20]
   oversample: False
   undersample: False
 
