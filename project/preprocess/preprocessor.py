@@ -34,7 +34,7 @@ class Preprocessor(metaclass=Singleton):
         return train, validation, test
     
     def mini_batch(self, input_array: numpy.ndarray):
-        return numpy.array_split(input_array, self.config_service.logistic_regression_batch_size)
+        return numpy.array_split(input_array, self.config_service.logistic_regression_num_batch)
     
     def normalize_features(self, input_df: pandas.DataFrame):
         feature_columns = input_df.columns[~(input_df.columns.isin(["timestamp", "label"]))]

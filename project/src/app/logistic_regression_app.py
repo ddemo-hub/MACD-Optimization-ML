@@ -25,7 +25,7 @@ class LogisticRegressionApp():
 
         return K
     
-    def POLY(self, X, degree):
+    def POLY(self, X, degree=2):
         original_axis = X.shape[1]
         for d in range(2, degree+1):
             X = numpy.hstack((X, (X[:, :original_axis]**d)))
@@ -51,7 +51,7 @@ class LogisticRegressionApp():
         # Non-Linear Transformation
         features = self.RBF(features)
         features = self.TRIG(features)
-        features = self.POLY(features, 2)
+        features = self.POLY(features)
         
         # Train-Validation-Test Split
         features_train, features_validation, features_test = self.preprocessor.timeseries_split(features) 
@@ -100,6 +100,10 @@ class LogisticRegressionApp():
             training_loss_per_epoch.append(training_loss)
             validation_loss_per_epoch.append(validation_loss)
             validation_f1_score_per_epoch.append(validation_f1)
+
+        with numpy.printoptions(threshold=numpy.inf):
+            Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
+            Logger.info(f"[Logistic Regression] Weights Sorted: \n{numpy.argsort(model.weights)}")
             
         # Test Model
         test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)        
@@ -107,9 +111,6 @@ class LogisticRegressionApp():
         test_f1 = f1_macro(labels_test, numpy.array(test_preds))
         Logger.info(f"[Logistic Regression] Test F1 Score: {test_f1}") 
         Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{test_confusion_matrix}") 
-
-        with numpy.printoptions(threshold=numpy.inf):
-            Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
         
         plot_loss(
             training_loss=training_loss_per_epoch, 
@@ -173,13 +174,14 @@ class LogisticRegressionApp():
             training_loss_per_epoch.append(training_loss)
             validation_loss_per_epoch.append(validation_loss)
             validation_f1_score_per_epoch.append(validation_f1)
-            
-        test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)
-        Logger.info(f"[Logistic Regression] Test F1 Score: {f1_macro(labels_test, numpy.array(test_preds))}") 
-        Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{confusion_matrix(labels_test, numpy.array(test_preds))}") 
         
         with numpy.printoptions(threshold=numpy.inf):
             Logger.info(f"[Logistic Regression] Weights: \n{model.weights}")
+            Logger.info(f"[Logistic Regression] Weights Sorted: \n{numpy.argsort(model.weights)}")
+
+        test_preds = model.predict(features_test, self.config_service.logistic_regression_threshold)
+        Logger.info(f"[Logistic Regression] Test F1 Score: {f1_macro(labels_test, numpy.array(test_preds))}") 
+        Logger.info(f"[Logistic Regression] Test Confusion Matrix: \n{confusion_matrix(labels_test, numpy.array(test_preds))}") 
         
         plot_loss(
             training_loss=training_loss_per_epoch, 

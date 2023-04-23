@@ -1,5 +1,3 @@
-from src.utils.logger import Logger
-
 import numpy
 
 class LogisticRegression():
