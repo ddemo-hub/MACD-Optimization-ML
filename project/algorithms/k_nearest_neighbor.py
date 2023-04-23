@@ -15,7 +15,7 @@ class KNearestNeighbor():
         k_indices = numpy.argsort(distances)[:self.k]
         k_nearest_labels = [self.y_train[i] for i in k_indices]
         
-        most_common_label = Counter(k_nearest_labels).most_common(1)[0][0]
+        most_common_label = max(set(k_nearest_labels), key =k_nearest_labels.count)
         
         return most_common_label
     
