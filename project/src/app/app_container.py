@@ -6,7 +6,7 @@ from src.services.config_service import ConfigService
 from preprocess.preprocessor import Preprocessor
 
 from .logistic_regression_app import LogisticRegressionApp
-from .random_forest_app import RandomForestApp
+from .naive_bayes_app import NaiveBayesApp
 from .k_nearest_neighbor_app import KNearestNeighborApp
 
 from dataclasses import dataclass
