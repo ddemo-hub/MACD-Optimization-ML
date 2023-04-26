@@ -29,7 +29,7 @@ def confusion_matrix(ground, pred):
     return pandas.crosstab(ground_df, pred_df)
     
     
-def plot_loss(training_loss: list[float], validation_loss: list[float], num_epoch: int, savefig_path: str):
+def plot_loss(training_loss: list[float], validation_loss: list[float], num_epoch: int, savefig_path: str, block: bool=True):
     plt.title('Training and Validation Loss')
     
     plt.plot(range(1, num_epoch+1), training_loss, label='Training Loss')
@@ -43,11 +43,11 @@ def plot_loss(training_loss: list[float], validation_loss: list[float], num_epoc
     plt.savefig(savefig_path)
 
     try:
-        plt.show()
+        plt.show(block=block)
     except UserWarning as error:
         print(f"{error}\nUnable to show the Loss Graph interactivaly")
     
-def plot_f1(f1_scores: list[float], num_epoch: int, savefig_path: str):
+def plot_f1(f1_scores: list[float], num_epoch: int, savefig_path: str, block: bool=True):
     plt.title('F1 Score')
     
     plt.plot(range(1, num_epoch+1), f1_scores, label='F1 Scores')
@@ -60,6 +60,6 @@ def plot_f1(f1_scores: list[float], num_epoch: int, savefig_path: str):
     plt.savefig(savefig_path)
 
     try:
-        plt.show()
+        plt.show(block=block)
     except UserWarning as error:
         print(f"{error}\nUnable to show the Loss Graph interactivaly")

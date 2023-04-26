@@ -49,9 +49,13 @@ class LogisticRegressionApp():
         features =  processed_df[processed_df.columns.drop(["timestamp", "label"])].to_numpy()
         
         # Non-Linear Transformation
-        features = self.RBF(features)
-        features = self.TRIG(features)
-        features = self.POLY(features)
+        for transformation in self.config_service.logistic_regression_transformation:
+            if transformation == "RBF":
+                features = self.RBF(features)
+            elif transformation == "TRIG":
+                features = self.TRIG(features)
+            elif transformation == "POLY":
+                features = self.POLY(features)
         
         # Train-Validation-Test Split
         features_train, features_validation, features_test = self.preprocessor.timeseries_split(features) 
