@@ -2,4 +2,6 @@
 
 is_confidential: True
 
+categorize_features: False
+
 target_features: []
