@@ -36,12 +36,15 @@ logistic_regression_parameters:
   class_weights: False
   transformation: ["RBF", "TRIG", "POLY"]   # ENUMS: {"TRIG", "POLY", "RBF"} | The transformation is applied from left to right sequentially
 
-k_nearest_neighbor_parameters:
-  k: [1, 20]                    # Can be an integer o a list. If list, follow the format [starting k, end k] to run all k values within the range
+k_nearest_neighbors_parameters:
+  k: [1, 15]                        # Can be an integer o a list. If list, follow the format [starting k, end k] to run all k values within the range
+  similarity_measure: "euclidean"   # [euclidean, cosine, manhatten]
   oversample: False
   undersample: False
 
 naive_bayes_parameters:
+  method: "categorical"
+
 
 
 ## Symbols ENUMS:

@@ -2,7 +2,7 @@ from src.services.config_service import ConfigService
 
 from preprocess.preprocessor import Preprocessor
 
-from algorithms.k_nearest_neighbor import KNearestNeighbor
+from algorithms.k_nearest_neighbors import KNearestNeighbors
 
 from src.utils.globals import Globals
 from src.utils.logger import Logger
@@ -13,7 +13,7 @@ import shutil
 import numpy
 
 
-class KNearestNeighborApp():
+class KNearestNeighborsApp():
     def __init__(self, config_service: ConfigService, preprocessor: Preprocessor):
         self.config_service = config_service
         self.preprocessor = preprocessor
@@ -32,25 +32,26 @@ class KNearestNeighborApp():
         features_train = numpy.concatenate((features_train, features_validation))
         labels_train = numpy.concatenate((labels_train, labels_validation))
         
-        if self.config_service.k_nearest_neighnor_oversample == True:
+        if self.config_service.k_nearest_neighnors_oversample == True:
             from imblearn.over_sampling import RandomOverSampler
             ros = RandomOverSampler(random_state=42)
             features_train, labels_train = ros.fit_resample(features_train, labels_train)
-        elif self.config_service.k_nearest_neighnor_undersample == True:
+        elif self.config_service.k_nearest_neighnors_undersample == True:
             from imblearn.under_sampling import RandomUnderSampler
             rus = RandomUnderSampler(random_state=42)
             features_train, labels_train = rus.fit_resample(features_train, labels_train)
         
         # Initialize Model
-        k_config = self.config_service.k_nearest_neighnor_k
+        k_config = self.config_service.k_nearest_neighnors_k
+        similarity_measure = self.config_service.k_nearest_neighnors_similarity_measure
         if type(k_config) == int:
-            model = KNearestNeighbor(k=k_config)
+            model = KNearestNeighbors(k=k_config)
 
             # Train model
             model.fit(features_train, labels_train)
             
             # Test Model
-            predictions = model.predict(features_test)
+            predictions = model.predict(features_test, similarity_measure=similarity_measure)
             
             test_f1 = f1_macro(labels_test, numpy.array(predictions))
             test_confusion_matrix = confusion_matrix(labels_test, numpy.array(predictions))        
@@ -60,13 +61,13 @@ class KNearestNeighborApp():
         elif type(k_config) == list:
             test_f1_per_k = []
             for k in range(k_config[0], k_config[1]+1):
-                model = KNearestNeighbor(k=k)
+                model = KNearestNeighbors(k=k)
 
                 # Train model
                 model.fit(features_train, labels_train)
                 
                 # Test Model
-                predictions = model.predict(features_test)
+                predictions = model.predict(features_test, similarity_measure=similarity_measure)
                 
                 test_f1 = f1_macro(labels_test, numpy.array(predictions))
                 test_confusion_matrix = confusion_matrix(labels_test, numpy.array(predictions))   
@@ -82,6 +83,7 @@ class KNearestNeighborApp():
             )
             
         shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
 
     def breast_cancer(self):
         from sklearn.datasets import load_breast_cancer
@@ -96,23 +98,23 @@ class KNearestNeighborApp():
         features_train = numpy.concatenate((features_train, features_validation))
         labels_train = numpy.concatenate((labels_train, labels_validation))
         
-        if self.config_service.k_nearest_neighnor_oversample == True:
+        if self.config_service.k_nearest_neighnors_oversample == True:
             from imblearn.over_sampling import RandomOverSampler
             ros = RandomOverSampler(random_state=42)
             features_train, labels_train = ros.fit_resample(features_train, labels_train)
-        elif self.config_service.k_nearest_neighnor_undersample == True:
+        elif self.config_service.k_nearest_neighnors_undersample == True:
             from imblearn.under_sampling import RandomUnderSampler
             rus = RandomUnderSampler(random_state=42)
             features_train, labels_train = rus.fit_resample(features_train, labels_train)
         
         # Initialize Model
-        model = KNearestNeighbor(k=self.config_service.k_nearest_neighnor_k)
+        model = KNearestNeighbors(k=self.config_service.k_nearest_neighnors_k)
 
         # Train model
         model.fit(features_train, labels_train)
         
         # Test Model
-        predictions = model.predict(features_test)
+        predictions = model.predict(features_test, similarity_measure=self.config_service.k_nearest_neighnors_similarity_measure)
         
         test_f1 = f1_macro(labels_test, numpy.array(predictions))
         test_confusion_matrix = confusion_matrix(labels_test, numpy.array(predictions))        
@@ -120,3 +122,4 @@ class KNearestNeighborApp():
         Logger.info(f"[K Nearest Neighbor] Test Confusion Matrix: \n{test_confusion_matrix}") 
         
         shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))

@@ -104,24 +104,32 @@ class ConfigService(metaclass=Singleton):
         return self.config["logistic_regression_parameters"]["transformation"]
        
     @property
-    def k_nearest_neighnor_k(self):
-        return self.config["k_nearest_neighbor_parameters"]["k"]
+    def k_nearest_neighnors_k(self):
+        return self.config["k_nearest_neighbors_parameters"]["k"]
 
     @property
-    def k_nearest_neighnor_undersample(self):
-        return self.config["k_nearest_neighbor_parameters"]["undersample"]
+    def k_nearest_neighnors_similarity_measure(self):
+        return self.config["k_nearest_neighbors_parameters"]["similarity_measure"]
 
     @property
-    def k_nearest_neighnor_oversample(self):
-        return self.config["k_nearest_neighbor_parameters"]["oversample"]
+    def k_nearest_neighnors_undersample(self):
+        return self.config["k_nearest_neighbors_parameters"]["undersample"]
+
+    @property
+    def k_nearest_neighnors_oversample(self):
+        return self.config["k_nearest_neighbors_parameters"]["oversample"]
        
+    @property
+    def naive_bayes_method(self):
+        return self.config["naive_bayes_parameters"]["method"]
+
     @property
     def is_confidential(self):
         return self.feature_config["is_confidential"]
     
     @property
-    def features_path(self):
-        return self.feature_config["features_path"]
+    def categorize_features(self):
+        return self.feature_config["categorize_features"]
     
     @property
     def target_features(self):

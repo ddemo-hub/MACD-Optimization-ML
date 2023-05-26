@@ -76,7 +76,13 @@ class Preprocessor(metaclass=Singleton):
         # Add features
         target_features = self.config_service.target_features 
         features_path = Globals.klines_path.joinpath(self.config_service.symbol, self.config_service.interval, "features.csv")
-        feature_builder = FeatureBuilder(input_df=candles_df, features_path=features_path, target_features=target_features)
+        feature_builder = FeatureBuilder(
+            input_df=candles_df, 
+            features_path=features_path, 
+            target_features=target_features, 
+            categorization=self.config_service.categorize_features
+        )
+
         if self.config_service.is_confidential == True:
             # If is_confidential is True, read features data from a .csv file 
             feature_builder.read_features()
@@ -86,7 +92,9 @@ class Preprocessor(metaclass=Singleton):
         candles_df = feature_builder.candles_df 
         
         # Normalize the data
-        candles_df = self.normalize_features(input_df=candles_df)
+        if self.config_service.categorize_features == True:
+            # No need for normalization if the features are categorized
+            candles_df = self.normalize_features(input_df=candles_df)
         
         # Drop unlabeled candles
         candles_df = candles_df.loc[candles_df.label.isin([1,2])]

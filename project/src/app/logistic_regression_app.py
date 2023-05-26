@@ -128,7 +128,9 @@ class LogisticRegressionApp():
             num_epoch=self.config_service.logistic_regression_num_epochs, 
             savefig_path=Globals.artifacts_path.joinpath("f1.png")
         )
+        
         shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
 
         
     def breast_cancer(self):
@@ -199,4 +201,6 @@ class LogisticRegressionApp():
             num_epoch=self.config_service.logistic_regression_num_epochs, 
             savefig_path=Globals.artifacts_path.joinpath("f1.png")
         )
+
         shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))

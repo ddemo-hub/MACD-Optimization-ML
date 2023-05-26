@@ -32,11 +32,23 @@ class NaiveBayesApp():
         features_train = numpy.concatenate((features_train, features_validation))
         labels_train = numpy.concatenate((labels_train, labels_validation))
 
-        model = NaiveBayes()
+        # Initialize model
+        model = NaiveBayes(method=self.config_service.naive_bayes_method)
 
+        # Train Model
         model.fit(features_train, labels_train)
 
-        ...
+        # Test & Evaluate Model
+        predictions = model.predict(features_test)
+
+        test_f1 = f1_macro(labels_test, numpy.array(predictions))
+        test_confusion_matrix = confusion_matrix(labels_test, numpy.array(predictions))        
+        Logger.info(f"[Naive Bayes] Test F1 Score: {test_f1}") 
+        Logger.info(f"[Naive Bayes] Test Confusion Matrix: \n{test_confusion_matrix}") 
+
+
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
 
     def breast_cancer(self):
         # Read data
@@ -68,3 +80,4 @@ class NaiveBayesApp():
         Logger.info(f"[Naive Bayes] Test Confusion Matrix: \n{test_confusion_matrix}") 
         
         shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
+        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
