@@ -2,4 +2,4 @@
 
 is_confidential: True
 
-features_path:
+target_features: []
