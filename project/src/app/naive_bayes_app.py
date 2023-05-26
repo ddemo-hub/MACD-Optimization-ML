@@ -68,22 +68,3 @@ class NaiveBayesApp():
         Logger.info(f"[Naive Bayes] Test Confusion Matrix: \n{test_confusion_matrix}") 
         
         shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
-
-    def toy(self):
-        import pandas
-        dataset = pandas.read_csv("toy_dataset.csv")
-        dataset = dataset[97:115].reset_index()
-
-        features = dataset[["City", "Gender"]].to_numpy()
-        labels = dataset["Illness"].to_numpy()
-
-        features_train, features_test = numpy.array_split(features, [int(len(features) * 0.8)])
-        labels_train, labels_test = numpy.array_split(labels, [int(len(features) * 0.8)])
-        
-        model = NaiveBayes(method="categorical")
-
-        model.fit(features_train, labels_train)
-        
-        model.predict(features_test)
-
-        ...
