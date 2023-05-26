@@ -1,6 +1,6 @@
 application:
   is_logistic_regression: False
-  is_k_nearest_neighbor: True
+  is_k_nearest_neighbor: False
   is_naive_bayes: True
 
 binance_data_url: https://data.binance.vision/data/spot/monthly/klines
