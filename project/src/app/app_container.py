@@ -6,8 +6,8 @@ from src.services.config_service import ConfigService
 from preprocess.preprocessor import Preprocessor
 
 from .logistic_regression_app import LogisticRegressionApp
-from .naive_bayes_app import NaiveBayesApp
 from .k_nearest_neighbor_app import KNearestNeighborApp
+from .naive_bayes_app import NaiveBayesApp
 
 from dataclasses import dataclass
 
@@ -28,6 +28,11 @@ class AppContainer(metaclass=Singleton):
     )
     
     k_nearest_neighbor_app = KNearestNeighborApp(
+        config_service=config_service,
+        preprocessor=preprocessor
+    )
+
+    naive_bayes_app = NaiveBayesApp(
         config_service=config_service,
         preprocessor=preprocessor
     )

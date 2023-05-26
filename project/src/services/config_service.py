@@ -123,3 +123,6 @@ class ConfigService(metaclass=Singleton):
     def features_path(self):
         return self.feature_config["features_path"]
     
+    @property
+    def target_features(self):
+        return self.feature_config["target_features"]

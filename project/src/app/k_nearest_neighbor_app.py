@@ -75,11 +75,12 @@ class KNearestNeighborApp():
                 
                 test_f1_per_k.append(test_f1)      
 
-        plot_f1(
-            f1_scores=test_f1_per_k,
-            num_epoch=k_config[1],
-            savefig_path=Globals.artifacts_path.joinpath("f1.png")
-        )
+            plot_f1(
+                f1_scores=test_f1_per_k,
+                num_epoch=k_config[1],
+                savefig_path=Globals.artifacts_path.joinpath("f1.png")
+            )
+            
         shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
 
     def breast_cancer(self):

@@ -1,7 +1,7 @@
 application:
-  is_logistic_regression: True
-  is_k_nearest_neighbor: False
-  is_naive_bayes: False
+  is_logistic_regression: False
+  is_k_nearest_neighbor: True
+  is_naive_bayes: True
 
 binance_data_url: https://data.binance.vision/data/spot/monthly/klines
 
@@ -37,9 +37,11 @@ logistic_regression_parameters:
   transformation: ["RBF", "TRIG", "POLY"]   # ENUMS: {"TRIG", "POLY", "RBF"} | The transformation is applied from left to right sequentially
 
 k_nearest_neighbor_parameters:
-  k: [1, 20]
+  k: [1, 20]                    # Can be an integer o a list. If list, follow the format [starting k, end k] to run all k values within the range
   oversample: False
   undersample: False
+
+naive_bayes_parameters:
 
 
 ## Symbols ENUMS:

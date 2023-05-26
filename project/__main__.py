@@ -10,7 +10,7 @@ def run(app):
     if app.config_service.application["is_k_nearest_neighbor"] == True:
         app.k_nearest_neighbor_app.train()
     if app.config_service.application["is_naive_bayes"] == True:
-        pass
+        app.naive_bayes_app.breast_cancer()
 
 if __name__ == "__main__":
     run(app=AppContainer)

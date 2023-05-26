@@ -12,6 +12,7 @@ from algorithms.commons.evaluators import f1_macro, confusion_matrix, plot_loss,
 import shutil
 import numpy
 
+
 class LogisticRegressionApp():
     def __init__(self, config_service: ConfigService, preprocessor: Preprocessor):
         self.config_service = config_service
