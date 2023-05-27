@@ -59,7 +59,7 @@ class NaiveBayesApp(BaseApp):
         labels_train = numpy.concatenate((labels_train, labels_validation))
 
         # Initialize Model
-        model = NaiveBayes()
+        model = NaiveBayes(method=self.config_service.naive_bayes_method)
 
         # Train Model
         model.fit(features_train, labels_train)
