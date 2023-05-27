@@ -1,22 +1,17 @@
-from src.services.config_service import ConfigService
-
-from preprocess.preprocessor import Preprocessor
+from .base_app import BaseApp
 
 from algorithms.naive_bayes import NaiveBayes
 
-from src.utils.globals import Globals
 from src.utils.logger import Logger
 
-from algorithms.commons.evaluators import f1_macro, confusion_matrix, plot_loss, plot_f1
+from algorithms.commons.evaluators import f1_macro, confusion_matrix
 
-import shutil
 import numpy
 
 
-class NaiveBayesApp():
-    def __init__(self, config_service: ConfigService, preprocessor: Preprocessor):
-        self.config_service = config_service
-        self.preprocessor = preprocessor
+class NaiveBayesApp(BaseApp):
+    def __init__(self, config_service, preprocessor):
+        super().__init__(config_service=config_service, preprocessor=preprocessor)
 
     def train(self):
         # Get the preprocessed data
@@ -34,7 +29,7 @@ class NaiveBayesApp():
 
         # Initialize model
         model = NaiveBayes(method=self.config_service.naive_bayes_method)
-
+        
         # Train Model
         model.fit(features_train, labels_train)
 
@@ -46,9 +41,7 @@ class NaiveBayesApp():
         Logger.info(f"[Naive Bayes] Test F1 Score: {test_f1}") 
         Logger.info(f"[Naive Bayes] Test Confusion Matrix: \n{test_confusion_matrix}") 
 
-
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
+        self.save_configs()
 
     def breast_cancer(self):
         # Read data
@@ -79,5 +72,4 @@ class NaiveBayesApp():
         Logger.info(f"[Naive Bayes] Test F1 Score: {test_f1}") 
         Logger.info(f"[Naive Bayes] Test Confusion Matrix: \n{test_confusion_matrix}") 
         
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
+        self.save_configs()

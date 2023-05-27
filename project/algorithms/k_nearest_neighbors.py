@@ -19,7 +19,7 @@ class KNearestNeighbors():
         elif self.similarity_measure == "cosine":
             distances = [(x @ x_train.T) / (numpy.linalg.norm(x) * numpy.linalg.norm(x_train)) for x_train in self.X_train]
         elif self.similarity_measure == "manhattan":
-            distances = [sum(abs(p1 - p2) for p1, p2 in zip(x, x_train)) for x_train in self.X_train]
+            distances = [numpy.sum(abs(x-x_train)) for x_train in self.X_train] 
 
         if self.similarity_measure == "cosine":
             k_indices = numpy.argsort(distances)[::-1][:self.k] # A greater cosine similarity value means a lower distance

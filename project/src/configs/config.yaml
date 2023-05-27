@@ -1,14 +1,16 @@
 application:
   is_logistic_regression: False
-  is_k_nearest_neighbor: False
-  is_naive_bayes: True
+  is_k_nearest_neighbors: False
+  is_naive_bayes: False
+
+breast_cancer: False
 
 binance_data_url: https://data.binance.vision/data/spot/monthly/klines
 
 candle_parameters:          # All timestamps must be in milliseconds precision 
   start_ts: 1575147600000
   end_ts: 1680210000000
-  symbol: ETHUSDT
+  symbol: ETHUSDT           # Symbol Enumerations can be found here: https://data.binance.vision/?prefix=data/spot/monthly/klines/
   interval: 30m
 
 labeling_parameters:
@@ -38,17 +40,13 @@ logistic_regression_parameters:
 
 k_nearest_neighbors_parameters:
   k: [1, 15]                        # Can be an integer o a list. If list, follow the format [starting k, end k] to run all k values within the range
-  similarity_measure: "euclidean"   # [euclidean, cosine, manhatten]
+  similarity_measure: "euclidean"   # [euclidean, cosine, manhattan]
   oversample: False
   undersample: False
 
 naive_bayes_parameters:
-  method: "categorical"
+  method: "gaussian"             # [gaussian, categorical]
 
-
-
-## Symbols ENUMS:
-# Symbol Enumerations can be found here: https://data.binance.vision/?prefix=data/spot/monthly/klines/
 
 ## Interval ENUMS:
 # KLINE_INTERVAL_1MINUTE = '1m'

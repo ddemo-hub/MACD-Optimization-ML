@@ -1,6 +1,4 @@
-from src.services.config_service import ConfigService
-
-from preprocess.preprocessor import Preprocessor
+from .base_app import BaseApp
 
 from algorithms.logistic_regression import LogisticRegression
 
@@ -9,14 +7,12 @@ from src.utils.logger import Logger
 
 from algorithms.commons.evaluators import f1_macro, confusion_matrix, plot_loss, plot_f1
 
-import shutil
 import numpy
 
 
-class LogisticRegressionApp():
-    def __init__(self, config_service: ConfigService, preprocessor: Preprocessor):
-        self.config_service = config_service
-        self.preprocessor = preprocessor
+class LogisticRegressionApp(BaseApp):
+    def __init__(self, config_service, preprocessor):
+        super().__init__(config_service=config_service, preprocessor=preprocessor)
     
     def RBF(self, X, gamma=None):
         if gamma == None:
@@ -129,9 +125,7 @@ class LogisticRegressionApp():
             savefig_path=Globals.artifacts_path.joinpath("f1.png")
         )
         
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
-
+        self.save_configs()
         
     def breast_cancer(self):
         from sklearn.datasets import load_breast_cancer
@@ -202,5 +196,4 @@ class LogisticRegressionApp():
             savefig_path=Globals.artifacts_path.joinpath("f1.png")
         )
 
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
+        self.save_configs()

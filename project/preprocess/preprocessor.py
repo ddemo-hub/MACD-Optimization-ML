@@ -35,27 +35,7 @@ class Preprocessor(metaclass=Singleton):
     
     def mini_batch(self, input_array: numpy.ndarray):
         return numpy.array_split(input_array, self.config_service.logistic_regression_num_batch)
-    
-    def normalize_features(self, input_df: pandas.DataFrame):
-        feature_columns = input_df.columns[~(input_df.columns.isin(["timestamp", "label"]))]
-        
-        # Zscore
-        zscore_columns = feature_columns[feature_columns.str.get(-1) != "0"]
-        for column in zscore_columns:
-            input_df[column] = rolling_zscore(
-                column=input_df[column], 
-                window=self.config_service.standardization_window, 
-                limit=self.config_service.standardization_limit
-            )
-        
-        # Ratio
-        ratio_columns = feature_columns[feature_columns.str.get(-2) != "0"]
-        input_df[ratio_columns] = input_df[ratio_columns] / input_df[ratio_columns].shift(1)
-        
-        input_df.dropna(inplace=True) 
-        
-        return input_df
-    
+
     def prepare_features(self):
         # Read OHLCV data from the recordings
         candles_df = self.data_service.read_candles(
@@ -74,15 +54,7 @@ class Preprocessor(metaclass=Singleton):
         )
         
         # Add features
-        target_features = self.config_service.target_features 
-        features_path = Globals.klines_path.joinpath(self.config_service.symbol, self.config_service.interval, "features.csv")
-        feature_builder = FeatureBuilder(
-            input_df=candles_df, 
-            features_path=features_path, 
-            target_features=target_features, 
-            categorization=self.config_service.categorize_features
-        )
-
+        feature_builder = FeatureBuilder(input_df=candles_df, config_service=self.config_service)
         if self.config_service.is_confidential == True:
             # If is_confidential is True, read features data from a .csv file 
             feature_builder.read_features()
@@ -92,9 +64,13 @@ class Preprocessor(metaclass=Singleton):
         candles_df = feature_builder.candles_df 
         
         # Normalize the data
-        if self.config_service.categorize_features == True:
+        if self.config_service.categorize_features == False:
             # No need for normalization if the features are categorized
-            candles_df = self.normalize_features(input_df=candles_df)
+            feature_columns = candles_df.columns[~(candles_df.columns.isin(["timestamp", "label"]))]
+            for column in feature_columns:
+                candles_df[column] = feature_builder.normalize_feature(candles_df[column])
+            candles_df.dropna(inplace=True)
+            candles_df.reset_index(drop=True, inplace=True)
         
         # Drop unlabeled candles
         candles_df = candles_df.loc[candles_df.label.isin([1,2])]

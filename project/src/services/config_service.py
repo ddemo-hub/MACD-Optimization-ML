@@ -14,6 +14,10 @@ class ConfigService(metaclass=Singleton):
     @property
     def application(self):
         return self.config["application"]
+
+    @property
+    def breast_cancer(self):
+        return self.config["breast_cancer"]
     
     @property
     def binance_data_url(self):

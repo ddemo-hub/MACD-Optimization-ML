@@ -1,6 +1,4 @@
-from src.services.config_service import ConfigService
-
-from preprocess.preprocessor import Preprocessor
+from .base_app import BaseApp
 
 from algorithms.k_nearest_neighbors import KNearestNeighbors
 
@@ -9,14 +7,12 @@ from src.utils.logger import Logger
 
 from algorithms.commons.evaluators import f1_macro, confusion_matrix, plot_f1
 
-import shutil
 import numpy
 
 
-class KNearestNeighborsApp():
-    def __init__(self, config_service: ConfigService, preprocessor: Preprocessor):
-        self.config_service = config_service
-        self.preprocessor = preprocessor
+class KNearestNeighborsApp(BaseApp):
+    def __init__(self, config_service, preprocessor):
+        super().__init__(config_service=config_service, preprocessor=preprocessor)
 
     def train(self):
         # Get the preprocessed data
@@ -81,9 +77,8 @@ class KNearestNeighborsApp():
                 num_epoch=k_config[1],
                 savefig_path=Globals.artifacts_path.joinpath("f1.png")
             )
-            
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
+
+        self.save_configs()    
 
     def breast_cancer(self):
         from sklearn.datasets import load_breast_cancer
@@ -108,18 +103,44 @@ class KNearestNeighborsApp():
             features_train, labels_train = rus.fit_resample(features_train, labels_train)
         
         # Initialize Model
-        model = KNearestNeighbors(k=self.config_service.k_nearest_neighnors_k)
+        k_config = self.config_service.k_nearest_neighnors_k
+        similarity_measure = self.config_service.k_nearest_neighnors_similarity_measure
+        if type(k_config) == int:
+            model = KNearestNeighbors(k=k_config)
 
-        # Train model
-        model.fit(features_train, labels_train)
+            # Train model
+            model.fit(features_train, labels_train)
+            
+            # Test Model
+            predictions = model.predict(features_test, similarity_measure=similarity_measure)
+            
+            test_f1 = f1_macro(labels_test, numpy.array(predictions))
+            test_confusion_matrix = confusion_matrix(labels_test, numpy.array(predictions))        
+            Logger.info(f"[K Nearest Neighbor] Test F1 Score: {test_f1}") 
+            Logger.info(f"[K Nearest Neighbor] Test Confusion Matrix: \n{test_confusion_matrix}") 
+            
+        elif type(k_config) == list:
+            test_f1_per_k = []
+            for k in range(k_config[0], k_config[1]+1):
+                model = KNearestNeighbors(k=k)
+
+                # Train model
+                model.fit(features_train, labels_train)
+                
+                # Test Model
+                predictions = model.predict(features_test, similarity_measure=similarity_measure)
+                
+                test_f1 = f1_macro(labels_test, numpy.array(predictions))
+                test_confusion_matrix = confusion_matrix(labels_test, numpy.array(predictions))   
+                Logger.info(f"[K Nearest Neighbor] K = {k} | Test F1 Score: {test_f1}") 
+                Logger.info(f"[K Nearest Neighbor] K = {k} | Test Confusion Matrix: \n{test_confusion_matrix}") 
+                
+                test_f1_per_k.append(test_f1)      
+
+            plot_f1(
+                f1_scores=test_f1_per_k,
+                num_epoch=k_config[1],
+                savefig_path=Globals.artifacts_path.joinpath("f1.png")
+            )
         
-        # Test Model
-        predictions = model.predict(features_test, similarity_measure=self.config_service.k_nearest_neighnors_similarity_measure)
-        
-        test_f1 = f1_macro(labels_test, numpy.array(predictions))
-        test_confusion_matrix = confusion_matrix(labels_test, numpy.array(predictions))        
-        Logger.info(f"[K Nearest Neighbor] Test F1 Score: {test_f1}") 
-        Logger.info(f"[K Nearest Neighbor] Test Confusion Matrix: \n{test_confusion_matrix}") 
-        
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "config.yaml"), Globals.artifacts_path.joinpath("config.yamlignore"))
-        shutil.copyfile(Globals.project_path.joinpath("src", "configs", "feature_config.yaml"), Globals.artifacts_path.joinpath("feature_config.yamlignore"))
+        self.save_configs()

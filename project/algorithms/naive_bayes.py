@@ -1,3 +1,5 @@
+from src.utils.logger import Logger
+
 import numpy
 
 class NaiveBayes():
@@ -73,15 +75,19 @@ class NaiveBayes():
             ]
 
         elif self.method == "categorical":
-            try:
-                posteriors = [
-                    numpy.log(self._prior[index]) # Prior
-                    +
-                    numpy.sum([numpy.log(self._probs[index][feature_index][x[feature_index]]) for feature_index in range(len(x))])    # Posterior
-                    for index in range(len(self._classes))
-                ]
-            except KeyError:
-                raise Exception(f"One of the categories in the set {x} was not encountered during training")
+            def get_posterior(class_index: int, feature_index: int):
+                try:
+                    return self._probs[class_index][feature_index][x[feature_index]]
+                except KeyError as ex:
+                    Logger.warn(f"[Naive Bayes] The category [{ex}] at feature index ({feature_index}) was not encountered in class {self._classes[class_index]} during training")
+                    return 1    # log(1) = 0
+                
+            posteriors = [
+                numpy.log(self._prior[index]) # Prior
+                +
+                numpy.sum([numpy.log(get_posterior(index, feature_index)) for feature_index in range(len(x))])    # Posterior
+                for index in range(len(self._classes))
+            ]
 
         return self._classes[numpy.argmax(posteriors)]
 

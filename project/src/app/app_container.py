@@ -13,6 +13,7 @@ from dataclasses import dataclass
 
 @dataclass
 class AppContainer(metaclass=Singleton):
+    # Initialize services
     config_service = ConfigService(
         config=Globals.project_path.joinpath("src", "configs", "config.yaml"),
         feature_config=Globals.project_path.joinpath("src", "configs", "feature_config.yaml")
@@ -20,8 +21,10 @@ class AppContainer(metaclass=Singleton):
     
     data_service = DataService(config_service=config_service)
     
+    # Initialize preprocessor
     preprocessor = Preprocessor(config_service=config_service, data_service=data_service)
     
+    # Initialize apps
     logistic_regression_app = LogisticRegressionApp(
         config_service=config_service, 
         preprocessor=preprocessor
